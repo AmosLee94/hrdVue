@@ -2,5 +2,5 @@
     "compilerOptions":{
         "sourceMap": true
     },
-    "files": ["hrd2.ts"]
+    "files": ["hrd.ts"]
 }

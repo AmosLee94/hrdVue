@@ -12,6 +12,7 @@
 		<h2>华容道</h2>
 		<div id="board">
 			<img class="piece" v-for="(piece,index) in 10" v-bind:x="game.layout.piecesCoords[index][0]" v-bind:y="game.layout.piecesCoords[index][1]" v-bind:colspan="game.layout.piecesSize[index][0]" v-bind:rowspan="game.layout.piecesSize[index][1]" v-bind:id="index" v-bind:src="pieceSrc(index)" v-bind:draggable="piece.draggable" v-on:click="selectPiece(index)" ></img>
+
 			<div class="piece" v-for="(piece,index) in 2" v-bind:x="game.layout.piecesCoords[index+10][0]" v-bind:y="game.layout.piecesCoords[index+10][1]" v-bind:colspan="game.layout.piecesSize[index+10][0]" v-bind:rowspan="game.layout.piecesSize[index+10][1]" v-bind:id="index+10"  v-bind:draggable="piece.draggable" v-on:click="moveTo(index+10)" ></div>
 		</div>
 		<div class="exit">出口</div>
@@ -21,7 +22,7 @@
 		<button id="reset">重置</button>
 	</div>
 </body>
-<script type="text/javascript" src="js/hrd2.js"></script>
+<script type="text/javascript" src="js/hrd.js"></script>
 <script type="text/javascript">
 	var board = new Vue({
 		el:'#board',
