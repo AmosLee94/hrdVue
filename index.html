@@ -8,27 +8,29 @@
 	<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0, user-scalable=no"/>
 </head>
 <body>
-	<div class="container">
+	<div class="container" id="hrd">
 		<h2>华容道</h2>
 		<div id="board">
-			<img class="piece" v-for="(piece,index) in 10" v-bind:x="game.layout.piecesCoords[index][0]" v-bind:y="game.layout.piecesCoords[index][1]" v-bind:colspan="game.layout.piecesSize[index][0]" v-bind:rowspan="game.layout.piecesSize[index][1]" v-bind:id="index" v-bind:src="pieceSrc(index)" v-bind:draggable="piece.draggable" v-on:click="selectPiece(index)" ></img>
+			<img class="piece" v-for="(piece,index) in 10" v-bind:x="map[index][0]" v-bind:y="map[index][1]" v-bind:colspan="game.layout.piecesSize[index][0]" v-bind:rowspan="game.layout.piecesSize[index][1]" v-bind:id="index" v-bind:src="pieceSrc(index)" v-bind:draggable="piece.draggable" v-on:click="selectPiece(index)" ></img>
 
 			<div class="piece" v-for="(piece,index) in 2" v-bind:x="game.layout.piecesCoords[index+10][0]" v-bind:y="game.layout.piecesCoords[index+10][1]" v-bind:colspan="game.layout.piecesSize[index+10][0]" v-bind:rowspan="game.layout.piecesSize[index+10][1]" v-bind:id="index+10"  v-bind:draggable="piece.draggable" v-on:click="moveTo(index+10)" ></div>
 		</div>
 		<div class="exit">出口</div>
-		<button id="nextStep">下一步</button>
-		<button id="preStep">撤销</button>
-		<button id="auto">自动</button>
-		<button id="reset">重置</button>
+
+		<button v-on:click="reset">重置</button>
 	</div>
 </body>
 <script type="text/javascript" src="js/hrd.js"></script>
 <script type="text/javascript">
-	var board = new Vue({
-		el:'#board',
+	var game = new Game();
+	var map = game.layout.piecesCoords.slice(0);
+	// console.log(map);
+	new Vue({
+		el:'#hrd',
 		data:{
-			game:new Game(),
-			selectedPiece:false
+			game:game,
+			map:map,
+			selectedPiece:-1
 		},
 		methods:{
 			pieceSrc:function(index){
@@ -36,12 +38,23 @@
 			},
 			selectPiece:function(index){
 				this.selectedPiece = index;
+				// console.log("vue.selectPiece:"+index);
 			},
 			moveTo:function(index){
-				if(this.selectedPiece)
+				if(this.selectedPiece >= 0){
+					// console.log("[vue.moveTo]index: "+index);
 					this.game.moveTo(this.selectedPiece,index);
-					console.log("[moveTo]  selectedPiece:"+this.selectedPiece + ";index " +index);
-					console.log("x:"+this.game.layout.piecesCoords[this.selectedPiece][0])
+					Vue.set(this.map,index,this.game.layout.piecesName[index]);
+					Vue.set(this.map,10,this.game.layout.piecesName[10]);
+					Vue.set(this.map,11,this.game.layout.piecesName[11]);
+				}
+			},
+			reset(planId){
+				this.game.reset(planId);
+				this.map = this.game.layout.piecesCoords.slice(0);
+				// for(var i in this.game.layout.piecesCoords){
+				// 	Vue.set(this.map,i,this.game.layout.piecesName[i]);
+				// }
 			}
 		}
 	});

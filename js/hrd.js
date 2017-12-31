@@ -10,7 +10,7 @@ var Layout = /** @class */ (function () {
         this.piecesName = ["Zu1", "Zu2", "Zu3", "Zu4", "ZhangFei", "MaChao", "HuangZhong", "ZhaoYun", "GuanYu", "CaoCao", "blank1", "blank2"];
         this.piecesSize = [[1, 1], [1, 1], [1, 1], [1, 1], [1, 2], [1, 2], [1, 2], [1, 2], [2, 1], [2, 2], [1, 1], [1, 1]];
         if (coords.length != 12) {
-            console.log("error![Layout.constructor]");
+            // console.log("error![Layout.constructor]");
             return;
         }
         for (var i = 0; i < 12; i++) {
@@ -28,11 +28,14 @@ var Layout = /** @class */ (function () {
         var moveDistance = { "UP": [0, -1], "DOWN": [0, 1], "LEFT": [-1, 0], "RIGHT": [1, 0] };
         var pieceSize = this.piecesSize[pieceId];
         var pieceWidth = pieceSize[0];
-        var pieceHeith = pieceSize[1];
-        var moveDistance2 = { "UP": [0, -1], "DOWN": [0, pieceHeith], "LEFT": [-1, 0], "RIGHT": [pieceWidth, 0] };
+        var pieceHeight = pieceSize[1];
+        var moveDistance2 = { "UP": [0, -1], "DOWN": [0, pieceHeight], "LEFT": [-1, 0], "RIGHT": [pieceWidth, 0] };
         var blankId = (this.piecesCoords[pieceId][0] + moveDistance2[direction][0] == this.piecesCoords[10][0] && this.piecesCoords[pieceId][1] + moveDistance2[direction][1] == this.piecesCoords[10][1]) ? 10 : 11;
+        var anotherBliankId = blankId == 10 ? 11 : 10;
         this.moveByDelta(pieceId, moveDistance[direction][0], moveDistance[direction][1]);
-        this.moveByDelta(blankId, -moveDistance[direction][0] * pieceWidth, -moveDistance[direction][1] * pieceHeith);
+        this.moveByDelta(blankId, -moveDistance[direction][0] * pieceWidth, -moveDistance[direction][1] * pieceHeight);
+        if (pieceSize[{ "UP": 0, "DOWN": 0, "LEFT": 1, "RIGHT": 1 }[direction]] == 2)
+            this.moveByDelta(anotherBliankId, -moveDistance[direction][0] * pieceWidth, -moveDistance[direction][1] * pieceHeight);
     };
     return Layout;
 }());
@@ -40,6 +43,9 @@ var Game = /** @class */ (function () {
     function Game() {
         this.layout = new Layout([[1, 2], [2, 2], [1, 3], [2, 3], [0, 0], [0, 2], [3, 0], [3, 2], [1, 4], [1, 0], [0, 4], [3, 4]]);
     }
+    Game.prototype.reset = function (planId) {
+        this.layout = new Layout([[1, 2], [2, 2], [1, 3], [2, 3], [0, 0], [0, 2], [3, 0], [3, 2], [1, 4], [1, 0], [0, 4], [3, 4]]);
+    };
     Game.prototype.checkAttach = function (pieceId, blankId) {
         var direction = false;
         var pieceSize = this.layout.piecesSize[pieceId];
@@ -47,7 +53,7 @@ var Game = /** @class */ (function () {
         var pieceX = pieceCoords[0];
         var pieceY = pieceCoords[1];
         var pieceWidth = pieceSize[0];
-        var pieceHeith = pieceSize[1];
+        var pieceHeight = pieceSize[1];
         var blankCoords = this.layout.piecesCoords[blankId];
         var blankX = blankCoords[0];
         var blankY = blankCoords[1];
@@ -55,24 +61,28 @@ var Game = /** @class */ (function () {
         if (blankX >= pieceX && blankX < pieceX + pieceWidth) {
             if (pieceY - 1 == blankY)
                 direction = "UP";
-            else if (pieceY + pieceHeith == blankY)
+            else if (pieceY + pieceHeight == blankY)
                 direction = "DOWN";
         }
-        if (blankY >= pieceY && blankY < pieceY + pieceWidth) {
+        if (blankY >= pieceY && blankY < pieceY + pieceHeight) {
+            // console.log("direction --dd---");
             if (pieceX - 1 == blankX)
                 direction = "LEFT";
             else if (pieceX + pieceWidth == blankX)
                 direction = "RIGHT";
         }
+        // console.log("direction -----"+direction);
         return direction;
     };
     Game.prototype.checkGO = function (pieceId, blankId) {
         var anotherBlankId = blankId == 10 ? 11 : 10;
+        // console.log("checkGO:blankId: "+blankId+" anotherBlankId: "+anotherBlankId);
         var pieceSize = this.layout.piecesSize[pieceId];
         var pieceWidth = pieceSize[0];
-        var pieceHeith = pieceSize[1];
+        var pieceHeight = pieceSize[1];
         var direction = this.checkAttach(pieceId, blankId);
         if (direction == "UP" || direction == "DOWN") {
+            // console.log("[Game.checkGO]UP or DOWN:第一层判断通过");
             if (pieceWidth == 2) {
                 var anotherDirection = this.checkAttach(pieceId, anotherBlankId);
                 if (anotherDirection == direction)
@@ -83,17 +93,21 @@ var Game = /** @class */ (function () {
             }
         }
         else if (direction == "RIGHT" || direction == "LEFT") {
-            if (pieceHeith == 2) {
+            // console.log("[Game.checkGO]RIGHT or LEFT:第一层判断通过");
+            if (pieceHeight == 2) {
                 var anotherDirection = this.checkAttach(pieceId, anotherBlankId);
+                // console.log("checkGO:anotherBlankId:"+anotherBlankId);
+                // console.log("checkGO:"+anotherDirection);
                 if (anotherDirection == direction)
                     return direction;
             }
-            else if (pieceHeith == 1) {
+            else if (pieceHeight == 1) {
                 return direction;
             }
         }
     };
     Game.prototype.moveTo = function (pieceId, blankId) {
+        // console.log(`[Game.moveTo]pieceId:${pieceId};blankId:${blankId}`);
         var direction = this.checkGO(pieceId, blankId);
         if (direction) {
             this.layout.move(pieceId, direction);
@@ -126,4 +140,4 @@ var Game = /** @class */ (function () {
 // 	game.layout.piecesCoords[0]
 // }
 // main();
-//# sourceMappingURL=hrd2.js.map
+//# sourceMappingURL=hrd.js.map

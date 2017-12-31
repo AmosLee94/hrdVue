@@ -11,7 +11,7 @@ class Layout{
     public piecesSize = [[1,1],[1,1],[1,1],[1,1],[1,2],[1,2],[1,2],[1,2],[2,1],[2,2],[1,1],[1,1]];
     constructor(coords:number[][] = [[1,2],[2,2],[1,3],[2,3],[0,0],[0,2],[3,0],[3,2],[1,4],[1,0],[0,4],[3,4]]){
         if(coords.length != 12 ){
-            console.log("error![Layout.constructor]");
+            // console.log("error![Layout.constructor]");
             return ;
         }
         for(let i = 0;i < 12;i ++){
@@ -31,15 +31,18 @@ class Layout{
 
 		let pieceSize = this.piecesSize[pieceId];
 		let pieceWidth = pieceSize[0];
-		let pieceHeith = pieceSize[1];
+		let pieceHeight = pieceSize[1];
 
-		let moveDistance2 = {"UP":[0,-1],"DOWN":[0,pieceHeith],"LEFT":[-1,0],"RIGHT":[pieceWidth,0]}
+		let moveDistance2 = {"UP":[0,-1],"DOWN":[0,pieceHeight],"LEFT":[-1,0],"RIGHT":[pieceWidth,0]}
 
 
 		let blankId = (this.piecesCoords[pieceId][0] + moveDistance2[direction][0] == this.piecesCoords[10][0] && this.piecesCoords[pieceId][1] + moveDistance2[direction][1] == this.piecesCoords[10][1])? 10 : 11;
-
+		let anotherBliankId = blankId == 10?11:10;
 		this.moveByDelta(pieceId,moveDistance[direction][0],moveDistance[direction][1]);
-		this.moveByDelta(blankId,- moveDistance[direction][0] * pieceWidth,- moveDistance[direction][1] * pieceHeith);
+		this.moveByDelta(blankId,- moveDistance[direction][0] * pieceWidth,- moveDistance[direction][1] * pieceHeight);
+
+		if(pieceSize[{"UP":0,"DOWN":0,"LEFT":1,"RIGHT":1}[direction]] == 2)//需要考虑宽度或者高度，
+			this.moveByDelta(anotherBliankId,- moveDistance[direction][0] * pieceWidth,- moveDistance[direction][1] * pieceHeight);
 
     }
 }
@@ -48,8 +51,10 @@ class Game {
 	constructor() {
 		this.layout = new Layout([[1,2],[2,2],[1,3],[2,3],[0,0],[0,2],[3,0],[3,2],[1,4],[1,0],[0,4],[3,4]]);
 	}
-
-	public checkAttach(pieceId:number,blankId:number) {	//判断空白是否贴着棋子，是的话，返回方向,否则返回false
+	public reset(planId:number){
+		this.layout = new Layout([[1,2],[2,2],[1,3],[2,3],[0,0],[0,2],[3,0],[3,2],[1,4],[1,0],[0,4],[3,4]]);
+	}
+	private checkAttach(pieceId:number,blankId:number) {	//判断空白是否贴着棋子，是的话，返回方向,否则返回false
 		let direction:any = false;	
 
 		let pieceSize = this.layout.piecesSize[pieceId];
@@ -57,7 +62,7 @@ class Game {
 		let pieceX = pieceCoords[0];
 		let pieceY = pieceCoords[1];
 		let pieceWidth = pieceSize[0];
-		let pieceHeith = pieceSize[1];
+		let pieceHeight = pieceSize[1];
 
 		let blankCoords = this.layout.piecesCoords[blankId];
 		let blankX = blankCoords[0];
@@ -67,23 +72,27 @@ class Game {
 		
 		if(blankX >= pieceX && blankX < pieceX + pieceWidth){	//x坐标上看，空白在范围内
 			if(pieceY - 1 == blankY)direction = "UP";
-			else if(pieceY + pieceHeith == blankY)direction = "DOWN";
+			else if(pieceY + pieceHeight == blankY)direction = "DOWN";
 		}
-		if(blankY >= pieceY && blankY < pieceY + pieceWidth){	//y坐标上看，空白在范围内
+		if(blankY >= pieceY && blankY < pieceY + pieceHeight){	//y坐标上看，空白在范围内
+			// console.log("direction --dd---");
 			if(pieceX - 1 == blankX)direction = "LEFT";
 			else if(pieceX + pieceWidth == blankX)direction = "RIGHT";
 		}
+		// console.log("direction -----"+direction);
 		return direction;
 	}
-	public checkGO(pieceId:number,blankId:number){
+	private checkGO(pieceId:number,blankId:number){
 		let anotherBlankId = blankId == 10?11:10;
 
+		// console.log("checkGO:blankId: "+blankId+" anotherBlankId: "+anotherBlankId);
 		let pieceSize = this.layout.piecesSize[pieceId];
 		let pieceWidth = pieceSize[0];
-		let pieceHeith = pieceSize[1];
+		let pieceHeight = pieceSize[1];
 
 		let direction = this.checkAttach(pieceId,blankId);
 		if(direction == "UP" || direction == "DOWN"){
+			// console.log("[Game.checkGO]UP or DOWN:第一层判断通过");
 			if (pieceWidth == 2){
 				let anotherDirection = this.checkAttach(pieceId,anotherBlankId);
 				if(anotherDirection == direction) return direction;
@@ -91,15 +100,21 @@ class Game {
 				return direction;
 			}
 		}else if(direction == "RIGHT" || direction == "LEFT"){
-			if (pieceHeith == 2){
+
+			// console.log("[Game.checkGO]RIGHT or LEFT:第一层判断通过");
+			if (pieceHeight == 2){
 				let anotherDirection = this.checkAttach(pieceId,anotherBlankId);
+				// console.log("checkGO:anotherBlankId:"+anotherBlankId);
+				// console.log("checkGO:"+anotherDirection);
 				if(anotherDirection == direction) return direction;
-			}else if (pieceHeith == 1){
+
+			}else if (pieceHeight == 1){
 				return direction;
 			}
 		}
 	}
 	public moveTo(pieceId:number,blankId:number){
+		// console.log(`[Game.moveTo]pieceId:${pieceId};blankId:${blankId}`);
 		let direction = this.checkGO(pieceId,blankId);
 		if(direction){	//能移动
 			this.layout.move(pieceId,direction);
