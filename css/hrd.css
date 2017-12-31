@@ -1,0 +1,67 @@
+html{background: rgb(39,40,34);}
+body{margin: 0;}
+h2{margin: 0;}
+.container{
+	width: 400px;
+	margin: 0 auto;
+	background-color: #eee;
+	/*border:1px solid #000;*/
+	text-align:center;
+}
+#board{height: 500px;position: relative;}
+.exit{
+	width: 50%;
+	height:20px;
+	line-height:20px;
+	color:red;margin:0 auto;
+	background-color: #dd0;
+	position: relative;
+}
+.exit:before{
+	content: "";
+	display: block;
+	width: 0;
+	height: 0;
+	border-style: solid; 
+	border-width: 10px 20px;
+	border-color: #eee #dd0 #dd0 #eee;
+	position: absolute;
+	left:-40px;
+	top:0;
+}
+.exit:after{
+	content: "";
+	display: block;
+	width: 0;
+	height: 0;
+	border-style: solid; 
+	border-width: 10px 20px;
+	border-color: #eee #eee #dd0 #dd0;
+	position: absolute;
+	right:-40px;
+	top:0;
+}
+.piece{
+	position: absolute;
+	text-align:center;
+	transition:left 0.35s,top 0.35s;
+}
+.piece[rowspan="1"]{height: 20%;}
+.piece[rowspan="2"]{height: 40%;}
+.piece[colspan="1"]{width: 25%;}
+.piece[colspan="2"]{width: 50%;}
+.piece[x="0"]{left:0;animation: all 5s;}
+.piece[x="1"]{left:25%;animation: all 5s;}
+.piece[x="2"]{left:50%;animation: all 5s;}
+.piece[x="3"]{left:75%;animation: all 5s;}
+.piece[y="0"]{top:0;}
+.piece[y="1"]{top:20%;}
+.piece[y="2"]{top:40%;}
+.piece[y="3"]{top:60%;}
+.piece[y="4"]{top:80%;}
+.piece[active="1"]{
+	opacity: 0.6;
+}
+/*#blank_1,#blank_2{display: none;}*/
+button{padding: 11px 28px;}
+/*#nextStep,#preStep,#auto{display: none;}*/

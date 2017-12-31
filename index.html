@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>华容道</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="css/hrd.css">
+	<script type="text/javascript" src="js/vue.js"></script>
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0, user-scalable=no"/>
+</head>
+<body>
+	<div class="container">
+		<h2>华容道</h2>
+		<div id="board">
+			<img class="piece" v-for="(piece,index) in 10" v-bind:x="game.layout.piecesCoords[index][0]" v-bind:y="game.layout.piecesCoords[index][1]" v-bind:colspan="game.layout.piecesSize[index][0]" v-bind:rowspan="game.layout.piecesSize[index][1]" v-bind:id="index" v-bind:src="pieceSrc(index)" v-bind:draggable="piece.draggable" v-on:click="selectPiece(index)" ></img>
+			<div class="piece" v-for="(piece,index) in 2" v-bind:x="game.layout.piecesCoords[index+10][0]" v-bind:y="game.layout.piecesCoords[index+10][1]" v-bind:colspan="game.layout.piecesSize[index+10][0]" v-bind:rowspan="game.layout.piecesSize[index+10][1]" v-bind:id="index+10"  v-bind:draggable="piece.draggable" v-on:click="moveTo(index+10)" ></div>
+		</div>
+		<div class="exit">出口</div>
+		<button id="nextStep">下一步</button>
+		<button id="preStep">撤销</button>
+		<button id="auto">自动</button>
+		<button id="reset">重置</button>
+	</div>
+</body>
+<script type="text/javascript" src="js/hrd2.js"></script>
+<script type="text/javascript">
+	var board = new Vue({
+		el:'#board',
+		data:{
+			game:new Game(),
+			selectedPiece:false
+		},
+		methods:{
+			pieceSrc:function(index){
+				return "img/" + this.game.layout.piecesName[index] + ".jpg";
+			},
+			selectPiece:function(index){
+				this.selectedPiece = index;
+			},
+			moveTo:function(index){
+				if(this.selectedPiece)
+					this.game.moveTo(this.selectedPiece,index);
+					console.log("[moveTo]  selectedPiece:"+this.selectedPiece + ";index " +index);
+					console.log("x:"+this.game.layout.piecesCoords[this.selectedPiece][0])
+			}
+		}
+	});
+</script>
+</html>
