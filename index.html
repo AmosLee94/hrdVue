@@ -65,5 +65,12 @@
 			}
 		}
 	});
+	// meta移动端缩放
+(function(){
+	var oMeta = document.createElement('meta');
+	oMeta.name="viewport"
+	oMeta.content = 'width=device-width,initial-scale='+document.documentElement.clientWidth/400+',maximum-scale='+document.documentElement.clientWidth/400+', user-scalable=no';
+	document.getElementsByTagName('head')[0].appendChild(oMeta);
+})();
 </script>
 </html>
