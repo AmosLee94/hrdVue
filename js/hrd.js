@@ -41,10 +41,26 @@ var Layout = /** @class */ (function () {
 }());
 var Game = /** @class */ (function () {
     function Game() {
+        this.planId = 0;
+        this.plans = [
+            [[1, 2], [2, 2], [1, 3], [2, 3], [0, 0], [0, 2], [3, 0], [3, 2], [1, 4], [1, 0], [0, 4], [3, 4]],
+            [[0, 4], [1, 3], [2, 3], [3, 4], [0, 0], [3, 0], [0, 2], [3, 2], [1, 2], [1, 0], [1, 4], [2, 4]],
+            [[0, 2], [3, 2], [1, 3], [2, 3], [0, 0], [3, 0], [0, 3], [3, 3], [1, 2], [1, 0], [1, 4], [2, 4]],
+            [[0, 2], [1, 2], [2, 2], [3, 2], [0, 0], [3, 0], [0, 3], [3, 3], [1, 3], [1, 0], [1, 4], [2, 4]],
+            [[0, 0], [3, 0], [1, 3], [2, 3], [0, 1], [3, 1], [0, 3], [3, 3], [1, 2], [1, 0], [1, 4], [2, 4]],
+            [[2, 2], [3, 2], [2, 3], [3, 3], [2, 0], [3, 0], [0, 3], [1, 3], [0, 2], [0, 0], [2, 4], [3, 4]]
+            // [[,],[,],[,],[,],[,],[,],[,],[,],[,],[,],[,],[,]],
+        ];
+        this.planName = ["不知道", "横刀立马1", "横刀立马2", "齐头并进", "兵分三路", "兵屯东路"];
         this.layout = new Layout([[1, 2], [2, 2], [1, 3], [2, 3], [0, 0], [0, 2], [3, 0], [3, 2], [1, 4], [1, 0], [0, 4], [3, 4]]);
     }
-    Game.prototype.reset = function (planId) {
-        this.layout = new Layout([[1, 2], [2, 2], [1, 3], [2, 3], [0, 0], [0, 2], [3, 0], [3, 2], [1, 4], [1, 0], [0, 4], [3, 4]]);
+    Game.prototype.reset = function () {
+        this.layout = new Layout(this.plans[this.planId]);
+    };
+    Game.prototype.changePlan = function (planId) {
+        this.planId++;
+        if (this.planId > 5)
+            this.planId = 0;
     };
     Game.prototype.checkAttach = function (pieceId, blankId) {
         var direction = false;
@@ -135,9 +151,9 @@ var Game = /** @class */ (function () {
     };
     return Game;
 }());
-// function main() {
-// 	let game = new Game();
-// 	game.layout.piecesCoords[0]
-// }
-// main();
+function main() {
+    var game = new Game();
+    game.reset();
+}
+main();
 //# sourceMappingURL=hrd.js.map

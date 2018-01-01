@@ -18,6 +18,7 @@
 		<div class="exit">出口</div>
 
 		<button v-on:click="reset">重置</button>
+		<button v-on:click="changePlan">选择</button>
 	</div>
 </body>
 <script type="text/javascript" src="js/hrd.js"></script>
@@ -55,6 +56,12 @@
 				// for(var i in this.game.layout.piecesCoords){
 				// 	Vue.set(this.map,i,this.game.layout.piecesName[i]);
 				// }
+			},
+			changePlan(){
+				this.game.changePlan();
+				this.game.reset(1);
+				this.map = this.game.layout.piecesCoords.slice(0);
+
 			}
 		}
 	});

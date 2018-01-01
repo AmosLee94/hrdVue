@@ -48,11 +48,26 @@ class Layout{
 }
 class Game {
 	public layout:Layout;
+	private planId = 0;
+	private plans = [
+		[[1,2],[2,2],[1,3],[2,3],[0,0],[0,2],[3,0],[3,2],[1,4],[1,0],[0,4],[3,4]],
+		[[0,4],[1,3],[2,3],[3,4],[0,0],[3,0],[0,2],[3,2],[1,2],[1,0],[1,4],[2,4]],
+		[[0,2],[3,2],[1,3],[2,3],[0,0],[3,0],[0,3],[3,3],[1,2],[1,0],[1,4],[2,4]],
+		[[0,2],[1,2],[2,2],[3,2],[0,0],[3,0],[0,3],[3,3],[1,3],[1,0],[1,4],[2,4]],
+		[[0,0],[3,0],[1,3],[2,3],[0,1],[3,1],[0,3],[3,3],[1,2],[1,0],[1,4],[2,4]],
+		[[2,2],[3,2],[2,3],[3,3],[2,0],[3,0],[0,3],[1,3],[0,2],[0,0],[2,4],[3,4]]
+		// [[,],[,],[,],[,],[,],[,],[,],[,],[,],[,],[,],[,]],
+	];
+	public planName = ["不知道","横刀立马1","横刀立马2","齐头并进","兵分三路","兵屯东路"];
 	constructor() {
 		this.layout = new Layout([[1,2],[2,2],[1,3],[2,3],[0,0],[0,2],[3,0],[3,2],[1,4],[1,0],[0,4],[3,4]]);
 	}
-	public reset(planId:number){
-		this.layout = new Layout([[1,2],[2,2],[1,3],[2,3],[0,0],[0,2],[3,0],[3,2],[1,4],[1,0],[0,4],[3,4]]);
+	public reset(){
+		this.layout = new Layout(this.plans[this.planId]);
+	}
+	public changePlan(planId:number){
+		this.planId ++ ;
+		if(this.planId > 5)this.planId = 0;
 	}
 	private checkAttach(pieceId:number,blankId:number) {	//判断空白是否贴着棋子，是的话，返回方向,否则返回false
 		let direction:any = false;	
@@ -139,12 +154,12 @@ class Game {
 		}
 	}
 }
-// function main() {
-// 	let game = new Game();
-// 	game.layout.piecesCoords[0]
+function main() {
+	let game = new Game();
+	game.reset();
 
-// }
-// main();
+}
+main();
 
 
 
